@@ -1,0 +1,54 @@
+RV_SUCSESS	Returning	0	0	WDY_BOOLEAN
+
+*    togw( ).
+*    pop_msg( ztype = 'I' ).
+*  ELSE.
+*    pop_msg( ).
+
+  DATA: lr_viw_api TYPE REF TO if_wd_view_controller,
+        lt_string  TYPE string_table.
+
+  lr_viw_api = wd_this->wd_get_api( ).
+  APPEND wd_comp_controller->mv_msg TO lt_string.
+  APPEND '확인 버튼 클릭 후 결재문서를 생성합니다.' TO lt_string.
+  APPEND '결재선 지정후 결재상신 하세요.' TO lt_string.
+  wd_comp_controller->mr_window =
+  wd_comp_controller->mr_window_manager->create_popup_to_confirm(
+      text                    = lt_string
+      button_kind             = if_wd_window=>co_buttons_ok
+      message_type            = if_wd_window=>co_msg_type_question "co_msg_type_information
+      close_button            = abap_false
+      default_button          = if_wd_window=>co_button_ok
+      window_title            = '메시지'
+      window_position         = 'CENTER'
+      window_width            = '400'
+      window_height           = '40' ).
+  wd_comp_controller->mr_window->subscribe_to_button_event(
+    EXPORTING
+      button            = if_wd_window=>co_button_ok
+      action_name       = 'TOGW'   "YES버튼을 눌렀을 때 실행할 action 이름을 적는다.
+      action_view       = lr_viw_api
+      is_default_button = abap_true  ).
+
+  wd_comp_controller->mr_window->open( ).
+
+
+
+
+
+  wd_comp_controller->togw( ).
+  IF wd_comp_controller->m_ref_wind IS NOT INITIAL.
+    exit_wind( ).           "Window Refresh
+  ENDIF.
+
+
+
+  IF wd_comp_controller->m_ref_wind IS NOT INITIAL.
+    wd_comp_controller->clear_post( ).
+    wd_comp_controller->get_data( ).
+  ENDIF.
+
+
+
+
+박물관과 총무처에 같이 수신된 공문입니다. 참고 하도록 하겠습니다
